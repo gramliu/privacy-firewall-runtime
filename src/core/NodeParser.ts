@@ -84,7 +84,6 @@ export function parseNode(manifest: string): NodeParseResult {
  * Parse the parameters to a node
  */
 function parseParams(paramsStr: string): Record<string, ScalarType> {
-  console.log("Parsing param string: " + paramsStr);
   const parsedParams = Parser.parseExpressionAt(paramsStr, 0, {
     ecmaVersion: 6,
   }) as ObjectNode;

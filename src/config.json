@@ -1,3 +1,9 @@
 {
-  "nodes": ["nodes/Filter", "nodes/Fuzz", "nodes/Input", "nodes/Limit"]
+  "nodes": [
+    "nodes/Filter",
+    "nodes/Fuzz",
+    "nodes/Input",
+    "nodes/Limit",
+    "nodes/Select"
+  ]
 }
