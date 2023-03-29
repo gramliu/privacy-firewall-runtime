@@ -1,10 +1,10 @@
 import GraphLoader from "./GraphLoader";
 import type Node from "./Node";
 import type { NodeProps } from "./Node";
-import Payload, { ScalarType } from "./Resource";
+import Resource, { ScalarType } from "./Resource";
 
 export interface BenchmarkResult {
-  result: Payload[];
+  result: Resource;
   performance: NodePerformance[];
 }
 
@@ -35,29 +35,29 @@ export default class Graph {
   /**
    * Execute this graph.
    *
-   * @param data an array of `Payload` to inject into the first node in the graph
+   * @param resource an array of `Payload` to inject into the first node in the graph
    * @param overrides a mapping of nodes to runtime parameters to override
    * Each key in `input` should correspond to a node on this graph.
    * Each corresponding value should be a mapping of properties on that node
    * to the overriding values
    */
-  public async execute(data: Payload[] = []): Promise<Payload[]> {
-    const { result } = await this.benchmark(data);
+  public async execute(resource: Resource): Promise<Resource> {
+    const { result } = await this.benchmark(resource);
     return result;
   }
 
   /**
    * Execute the graph but also measure time elapsed for each node
    */
-  public async benchmark(data: Payload[] = []): Promise<BenchmarkResult> {
+  public async benchmark(resource: Resource): Promise<BenchmarkResult> {
     const performance = [] as NodePerformance[];
-    let payloads: Payload[] = data;
+    let current = resource;
     for (const nodeName of this.pipeline) {
       const node = this.nodeRegistry[nodeName];
-      const payloadsProcessed = payloads.length;
+      const payloadsProcessed = current.data.length;
       const start = Date.now();
 
-      payloads = await node.process(payloads);
+      current = await node.process(current);
 
       const end = Date.now();
       performance.push({
@@ -68,7 +68,7 @@ export default class Graph {
     }
 
     return {
-      result: payloads,
+      result: current,
       performance,
     };
   }
