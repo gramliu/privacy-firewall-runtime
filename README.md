@@ -1,6 +1,6 @@
 # Privacy Firewall Runtime
 
-A linear manifest runtime for defining transformations on OAuth data.
+A linear manifest runtime for defining transformations on OAuth data. Built off of the [map-aggregate-runtime](https://github.com/gramliu/map-aggregate-runtime)
 
 ## Example Manifest
 
