@@ -9,11 +9,8 @@ export type ChooseProps = {
 
 @MapAggregateNode("Limit", "Limit the number of child data payloads.")
 export default class Choose extends Node<ChooseProps> {
-  async process(
-    resource: Resource,
-    params?: Partial<ChooseProps>
-  ): Promise<Resource> {
-    const { count } = this.getLocalParams(params);
+  async process(resource: Resource): Promise<Resource> {
+    const { count } = this.getLocalParams();
     if (resource.data.length < count) {
       return { ...resource };
     } else {

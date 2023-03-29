@@ -1,14 +1,18 @@
-TITLE: Example Flow
-HARDWARE: "Wyze Camera RTSP"
-PIPELINE: [DetectParkingSpots] -> Sum -> Count
+TITLE: Zoom
+DESCRIPTION: Get all upcoming Zoom meetings
+PIPELINE: CalendarEvents -> FilterZoom -> Select
 
-Sum(
-  type: "Aggregate",
-  operation: "sum"
+CalendarEvents(
+  type: "Input",
+  resourceType: "calendar_event"
 )
-Count(
-  type: "Aggregate",
-  operation: "count"
+FilterZoom(
+  type: "Filter",
+  operation: "match",
+  fields: ["location"]
 )
-
-PARAMETER: Sum.operation
+Select(
+  type: "Select",
+  operation: "select",
+  fields: ["name", "location", "startTime"]
+)

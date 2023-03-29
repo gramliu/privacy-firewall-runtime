@@ -22,10 +22,7 @@ export type FilterProps = {
 
 @MapAggregateNode("Filter", "Filter payloads based on a predicate")
 export default class Filter extends Node<FilterProps> {
-  async process(
-    resource: Resource,
-    params?: Partial<FilterProps>
-  ): Promise<Resource> {
+  async process(resource: Resource): Promise<Resource> {
     const {
       operation,
       target,
@@ -38,6 +35,7 @@ export default class Filter extends Node<FilterProps> {
     const filteredData = matchingTarget.filter((payload) =>
       predicate(payload[target], comparisonValue)
     );
+
     return {
       ...resource,
       data: filteredData,

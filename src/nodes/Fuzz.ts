@@ -20,10 +20,7 @@ export type FuzzProps = {
   "Convert a fine-grained number into a format with coarser granularity"
 )
 export default class Fuzz extends Node<FuzzProps> {
-  async process(
-    resource: Resource,
-    params?: Partial<FuzzProps>
-  ): Promise<Resource> {
+  async process(resource: Resource): Promise<Resource> {
     const { fuzzType, target, rangeType } = this.getLocalParams(params);
     const matching = getMatchingResourceData(resource.data, target);
     switch (fuzzType) {
