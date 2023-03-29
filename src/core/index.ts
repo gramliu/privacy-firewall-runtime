@@ -7,5 +7,5 @@ export {
 } from "./MapAggregateNode";
 export { default as Node } from "./Node";
 export { default as ParseError } from "./ParseError";
-export { default as Payload } from "./Payload";
+export { default as Payload } from "./Resource";
 export { default as Schema, SchemaPropertyInfo } from "./Schema";

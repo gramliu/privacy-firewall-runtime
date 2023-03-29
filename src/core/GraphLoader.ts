@@ -3,7 +3,7 @@ import Graph from "./Graph";
 import { getRegisteredNode } from "./MapAggregateNode";
 import Node, { NodeProps } from "./Node";
 import ParseError from "./ParseError";
-import type { ScalarType } from "./Payload";
+import type { ScalarType } from "./Resource";
 
 interface NodeParseResult {
   name: string;

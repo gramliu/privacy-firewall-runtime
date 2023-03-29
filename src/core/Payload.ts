@@ -3,13 +3,10 @@ export type ScalarType = string | number | boolean;
 /**
  * A payload carries data that passes through a program
  */
-export default interface Payload {
-  contentType: string;
-  contentValue: ScalarType;
-  timestamp?: number;
-  lat?: number;
-  lon?: number;
-  addressLabel?: string;
-  operationId?: string;
-  [key: string]: any;
+export interface Resource {
+  content_type: string;
+  metadata?: ResourceData;
+  data: ResourceData[];
 }
+
+export type ResourceData = Record<string, any>;

@@ -1,4 +1,4 @@
-import Payload from "./Payload";
+import Resource from "./Resource";
 import Schema from "./Schema";
 
 export type NodeProps = Record<string, unknown>;
@@ -26,10 +26,8 @@ export default abstract class Node<P extends NodeProps> {
   /**
    * Process a set of `input`, as described by the node's `inputs`
    * to a set of outputs, as described by the node's `output`s.
-   * If `params` is specified, it overrides the construction-time parameters
-   * for this local invocation
    */
-  abstract process(input: Payload[], params?: Partial<P>): Promise<Payload[]>;
+  abstract process(input: Resource): Promise<Resource>;
 
   /**
    * Return the schema associated with this node
@@ -40,7 +38,7 @@ export default abstract class Node<P extends NodeProps> {
    * Returns the parameters associated with this node
    */
   public getParams(): P {
-    return { ...this.params }
+    return { ...this.params };
   }
 
   /**

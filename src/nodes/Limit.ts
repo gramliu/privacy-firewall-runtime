@@ -1,5 +1,5 @@
 import Node from "../core/Node";
-import Payload from "../core/Payload";
+import Resource from "../core/Resource";
 import Schema from "../core/Schema";
 import { MapAggregateNode } from "../core";
 
@@ -7,17 +7,17 @@ export type ChooseProps = {
   count: number;
 };
 
-@MapAggregateNode("Choose", "Choose the first k payloads")
+@MapAggregateNode("Limit", "Limit the number of child data payloads.")
 export default class Choose extends Node<ChooseProps> {
   async process(
-    input: Payload[],
+    resource: Resource,
     params?: Partial<ChooseProps>
-  ): Promise<Payload[]> {
+  ): Promise<Resource> {
     const { count } = this.getLocalParams(params);
-    if (input.length < count) {
-      return input;
+    if (resource.data.length < count) {
+      return { ...resource };
     } else {
-      return input.slice(0, count);
+      return { ...resource, data: resource.data.slice(0, count) };
     }
   }
 
@@ -25,7 +25,7 @@ export default class Choose extends Node<ChooseProps> {
     return {
       count: {
         description:
-          "The number of payloads to select. If there are less payloads, all are sent",
+          "The number of child data payloads to keep. If there are fewer than this number, all payloads are kept.",
       },
     };
   }

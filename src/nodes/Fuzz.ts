@@ -1,8 +1,9 @@
-import Payload from "../core/Payload";
+import Resource from "../core/Resource";
 import Schema from "../core/Schema";
-import getMatchingPayloads from "../util/getMatchingPayloads";
+import getMatchingResourceData from "../util/getMatchingPayloads";
 import MapAggregateNode from "../core/MapAggregateNode";
 import Node from "../core/Node";
+import { ResourceData } from "core/Payload";
 
 type RangeType = "linear" | "logarithmic" | "halfLogarithmic";
 
@@ -20,18 +21,19 @@ export type FuzzProps = {
 )
 export default class Fuzz extends Node<FuzzProps> {
   async process(
-    input: Payload[],
+    resource: Resource,
     params?: Partial<FuzzProps>
-  ): Promise<Payload[]> {
-    const { fuzzType, target, rangeType } =
-      this.getLocalParams(params);
-    const matching = getMatchingPayloads(input, target);
+  ): Promise<Resource> {
+    const { fuzzType, target, rangeType } = this.getLocalParams(params);
+    const matching = getMatchingResourceData(resource.data, target);
     switch (fuzzType) {
       case "range":
-        return fuzzPayloadsIntoRange(matching, target, rangeType);
+        let fuzzed = fuzzDataIntoRange(matching, target, rangeType);
+        return { ...resource, data: fuzzed };
 
       case "percent":
-        return fuzzPayloadsIntoPercent(matching, target);
+        fuzzed = fuzzDataIntoPercent(matching, target);
+        return { ...resource, data: fuzzed };
     }
   }
 
@@ -51,9 +53,10 @@ export default class Fuzz extends Node<FuzzProps> {
         description: "Standard deviation to be used in likert scaling",
       },
       rangeType: {
-        description: "The type of range to apply, e.g. linear, logarithmic, halfLogarithmic",
-        defaultValue: "logarithmic"
-      }
+        description:
+          "The type of range to apply, e.g. linear, logarithmic, halfLogarithmic",
+        defaultValue: "logarithmic",
+      },
     };
   }
 }
@@ -61,11 +64,11 @@ export default class Fuzz extends Node<FuzzProps> {
 /**
  * Fuzz payload values into bins of size `rangeStart`
  */
-function fuzzPayloadsIntoRange(
-  input: Payload[],
+function fuzzDataIntoRange(
+  input: ResourceData[],
   target: string,
   rangeType: RangeType
-): Payload[] {
+): ResourceData[] {
   const output = [];
   for (const payload of input) {
     const value = payload[target];
@@ -83,7 +86,7 @@ function fuzzPayloadsIntoRange(
         break;
 
       case "halfLogarithmic":
-        [binLo, binHi] = computeLogarithmicBin(value, true)
+        [binLo, binHi] = computeLogarithmicBin(value, true);
     }
 
     output.push({
@@ -98,16 +101,19 @@ function fuzzPayloadsIntoRange(
 /**
  * Compute low and high logarithmic bins for a value
  */
-function computeLogarithmicBin(value: number, splitHalf: boolean = false): [number, number] {
+function computeLogarithmicBin(
+  value: number,
+  splitHalf: boolean = false
+): [number, number] {
   const abs = Math.abs(value);
   const sign = value == 0 ? 1 : Math.sign(value);
 
   const loPow = value == 0 ? 0 : Math.floor(Math.log10(abs));
-  let lo = Math.pow(10, loPow) * sign
-  let hi = Math.pow(10, loPow + 1) * sign
+  let lo = Math.pow(10, loPow) * sign;
+  let hi = Math.pow(10, loPow + 1) * sign;
 
   if (lo > hi) {
-    [lo, hi] = [hi, lo]
+    [lo, hi] = [hi, lo];
   }
 
   // Include midpoints i.e. [10, 100] -> [10, 50] or [50, 100]
@@ -120,13 +126,16 @@ function computeLogarithmicBin(value: number, splitHalf: boolean = false): [numb
     }
   }
 
-  return [lo, hi]
+  return [lo, hi];
 }
 
 /**
  * Fuzz payload values into percentages of the maximum encountered value
  */
-function fuzzPayloadsIntoPercent(input: Payload[], target: string): Payload[] {
+function fuzzDataIntoPercent(
+  input: ResourceData[],
+  target: string
+): ResourceData[] {
   const output = [];
   const payloadMax = input.reduce((max, payload) =>
     payload.contentValue > max.contentValue ? payload : max

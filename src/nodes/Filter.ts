@@ -1,7 +1,7 @@
 import Node from "../core/Node";
-import Payload, { ScalarType } from "../core/Payload";
+import Resource, { ScalarType } from "../core/Resource";
 import Schema from "../core/Schema";
-import getMatchingPayloads from "../util/getMatchingPayloads";
+import getMatchingResourceData from "../util/getMatchingPayloads";
 import { MapAggregateNode } from "../core";
 
 export type FilterOperation =
@@ -23,19 +23,25 @@ export type FilterProps = {
 @MapAggregateNode("Filter", "Filter payloads based on a predicate")
 export default class Filter extends Node<FilterProps> {
   async process(
-    input: Payload[],
+    resource: Resource,
     params?: Partial<FilterProps>
-  ): Promise<Payload[]> {
+  ): Promise<Resource> {
     const {
       operation,
       target,
       targetValue: comparisonValue,
     } = this.getLocalParams(params);
-    const matchingTarget = getMatchingPayloads(input, target);
+    const matchingTarget = getMatchingResourceData(resource.data, target);
     const predicate = getPredicate(operation);
-    return matchingTarget.filter((payload) =>
+
+    // Filter ResourceData
+    const filteredData = matchingTarget.filter((payload) =>
       predicate(payload[target], comparisonValue)
     );
+    return {
+      ...resource,
+      data: filteredData,
+    };
   }
 
   getSchema(): Schema<Required<FilterProps>> {

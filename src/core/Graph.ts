@@ -1,7 +1,7 @@
 import GraphLoader from "./GraphLoader";
 import type Node from "./Node";
 import type { NodeProps } from "./Node";
-import Payload, { ScalarType } from "./Payload";
+import Payload, { ScalarType } from "./Resource";
 
 export interface BenchmarkResult {
   result: Payload[];
