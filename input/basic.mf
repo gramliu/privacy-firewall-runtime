@@ -9,10 +9,12 @@ CalendarEvents(
 FilterZoom(
   type: "Filter",
   operation: "match",
-  fields: ["location"]
+  requirement: "any",
+  fields: ["location"],
+  targetValue: /\bhttps?:\/\/(?:www\.)?(?:zoom\.(?:us|com|gov)|\w+\.zoom\.(?:us|com|gov))\/[^\s]+\b/
 )
 Select(
   type: "Select",
   operation: "select",
-  fields: ["name", "location", "startTime"]
+  fields: ["summary", "location", "start"]
 )

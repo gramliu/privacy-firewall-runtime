@@ -1,8 +1,8 @@
+import { MapAggregateNode } from "../core";
 import Node from "../core/Node";
 import Resource, { ScalarType } from "../core/Resource";
 import Schema from "../core/Schema";
-import getMatchingResourceData from "../util/getMatchingPayloads";
-import { MapAggregateNode } from "../core";
+import { filterWithAnyProperty } from "../util/getMatchingPayloads";
 
 export type FilterOperation =
   | "==="
@@ -12,11 +12,13 @@ export type FilterOperation =
   | "<"
   | "<="
   | "includes"
-  | "not includes";
+  | "not includes"
+  | "match";
 
 export type FilterProps = {
   operation: FilterOperation;
-  target: string;
+  fields: string[];
+  requirement: "any" | "all";
   targetValue: ScalarType;
 };
 
@@ -25,16 +27,24 @@ export default class Filter extends Node<FilterProps> {
   async process(resource: Resource): Promise<Resource> {
     const {
       operation,
-      target,
-      targetValue: comparisonValue,
-    } = this.getLocalParams(params);
-    const matchingTarget = getMatchingResourceData(resource.data, target);
+      requirement,
+      fields: fieldNames,
+      targetValue,
+    } = this.getLocalParams();
+    const withProperties = filterWithAnyProperty(resource.data, fieldNames);
     const predicate = getPredicate(operation);
 
     // Filter ResourceData
-    const filteredData = matchingTarget.filter((payload) =>
-      predicate(payload[target], comparisonValue)
-    );
+    const filteredData = withProperties.filter((payload) => {
+      const fields = fieldNames.map((fieldName) => payload[fieldName]);
+      if (requirement === "all") {
+        // Ensure all fields match
+        return fields.every((field) => predicate(field, targetValue));
+      } else {
+        // Ensure at least one field matches
+        return fields.some((field) => predicate(field, targetValue));
+      }
+    });
 
     return {
       ...resource,
@@ -49,12 +59,16 @@ export default class Filter extends Node<FilterProps> {
           "The operation to use to compare against comparisonValue. Order: (payload value) [operation] (comparisonValue)",
         defaultValue: "===",
       },
-      target: {
-        description: "The target property on the payload to compare",
-        defaultValue: "contentValue",
+      fields: {
+        description: "The fields on the object to compare",
+      },
+      requirement: {
+        description:
+          "The strictness of the filter condition that must be met for a payload to be included",
+        defaultValue: "any",
       },
       targetValue: {
-        description: "The value to compare against",
+        description: "The value or pattern to compare against",
       },
     };
   }
@@ -65,7 +79,7 @@ export default class Filter extends Node<FilterProps> {
  */
 function getPredicate(
   filterOperation: FilterOperation
-): (value: ScalarType, comparison: ScalarType) => boolean {
+): (values: ScalarType, comparison: ScalarType) => boolean {
   switch (filterOperation) {
     case "===":
       return (a, b) => a === b;
@@ -90,5 +104,8 @@ function getPredicate(
 
     case "not includes":
       return (a: string, b: string) => !a.includes(b);
+
+    case "match":
+      return (a: string, b: RegExp) => b.test(a);
   }
 }

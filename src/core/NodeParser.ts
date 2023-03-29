@@ -52,7 +52,7 @@ interface ArrayNode extends AcornNode {
 export function parseNode(manifest: string): NodeParseResult {
   // Identify declaration substring
   const openIdx = manifest.indexOf("(");
-  const closeIdx = manifest.indexOf(")");
+  const closeIdx = manifest.indexOf("\n)") + 1;
   const declaration = manifest.substring(0, closeIdx + 1);
   try {
     // Extract relevant fields
