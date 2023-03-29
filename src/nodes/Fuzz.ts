@@ -1,9 +1,9 @@
 import Resource from "../core/Resource";
 import Schema from "../core/Schema";
-import getMatchingResourceData from "../util/getMatchingPayloads";
 import MapAggregateNode from "../core/MapAggregateNode";
 import Node from "../core/Node";
-import { ResourceData } from "core/Payload";
+import { ResourceData } from "../core/Resource";
+import { filterWithProperty } from "../util/filterPayloads";
 
 type RangeType = "linear" | "logarithmic" | "halfLogarithmic";
 
@@ -21,8 +21,8 @@ export type FuzzProps = {
 )
 export default class Fuzz extends Node<FuzzProps> {
   async process(resource: Resource): Promise<Resource> {
-    const { fuzzType, target, rangeType } = this.getLocalParams(params);
-    const matching = getMatchingResourceData(resource.data, target);
+    const { fuzzType, target, rangeType } = this.getLocalParams();
+    const matching = filterWithProperty(resource.data, target);
     switch (fuzzType) {
       case "range":
         let fuzzed = fuzzDataIntoRange(matching, target, rangeType);

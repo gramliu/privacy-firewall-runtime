@@ -1,10 +1,12 @@
 export type ScalarType = string | number | boolean | RegExp;
 
 /**
- * A payload carries data that passes through a program
+ * A resource is a collection of data with a content type
  */
 export default interface Resource {
-  resourceType: string;
-  metadata?: Record<string, any>;
-  data: Record<string, any>[];
+  contentType: string;
+  metadata?: ResourceData;
+  data: ResourceData[];
 }
+
+export type ResourceData = Record<string, any>;

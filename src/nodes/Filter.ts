@@ -2,7 +2,7 @@ import { MapAggregateNode } from "../core";
 import Node from "../core/Node";
 import Resource, { ScalarType } from "../core/Resource";
 import Schema from "../core/Schema";
-import { filterWithAnyProperty } from "../util/getMatchingPayloads";
+import { filterWithAnyProperty } from "../util/filterPayloads";
 
 export type FilterOperation =
   | "==="

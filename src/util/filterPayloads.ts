@@ -1,4 +1,4 @@
-import { ResourceData } from "core/Payload";
+import { ResourceData } from "../core/Resource";
 
 /**
  * Returns the subsequence of `input` that contain the specified property
