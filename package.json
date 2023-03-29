@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@sakitam-gis/kriging": "^0.1.0",
+    "acorn": "^8.8.2",
     "arima": "^0.2.5",
     "axios": "^0.27.2",
     "convert": "^4.9.0",

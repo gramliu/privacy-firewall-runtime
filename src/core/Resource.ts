@@ -1,4 +1,4 @@
-export type ScalarType = string | number | boolean;
+export type ScalarType = string | number | boolean | RegExp;
 
 /**
  * A payload carries data that passes through a program

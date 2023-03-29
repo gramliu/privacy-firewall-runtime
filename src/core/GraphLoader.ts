@@ -1,15 +1,19 @@
+import { type Node as AcornNode } from "acorn";
 import { nodes } from "../config.json";
 import Graph from "./Graph";
-import { getRegisteredNode } from "./MapAggregateNode";
 import Node, { NodeProps } from "./Node";
+import { parseNode } from "./NodeParser";
 import ParseError from "./ParseError";
-import type { ScalarType } from "./Resource";
 
 interface NodeParseResult {
   name: string;
   node: Node<NodeProps>;
   startIndex: number;
   endIndex: number;
+}
+
+interface ObjectNode extends AcornNode {
+  properties: ObjectNode[];
 }
 
 /**
@@ -93,7 +97,7 @@ export default class GraphLoader {
     const nodes: Record<string, Node<NodeProps>> = {};
     // Parse nodes while any are present
     while (this.hasNode(declarations)) {
-      const { startIndex, endIndex, node, name } = this.parseNode(declarations);
+      const { startIndex, endIndex, node, name } = parseNode(declarations);
       declarations =
         declarations.substring(0, startIndex) +
         declarations.substring(endIndex + 1);
@@ -113,57 +117,6 @@ export default class GraphLoader {
 
     // Node declaration must contain an open/close parenthesis
     return !(manifest.indexOf("(") == -1 || manifest.indexOf(")") == -1);
-  }
-
-  /**
-   * Parse a node from the manifest.
-   * At this point, there should be nothing else in the manifest
-   * aside from node declarations
-   */
-  private static parseNode(manifest: string): NodeParseResult {
-    // Identify declaration substring
-    const openIdx = manifest.indexOf("(");
-    const closeIdx = manifest.indexOf(")");
-    const declaration = manifest.substring(0, closeIdx + 1);
-    try {
-      // Extract relevant fields
-      const name = declaration.substring(0, openIdx).trim();
-      const paramsLine = declaration.substring(openIdx + 1, closeIdx);
-      const params = this.parseParams(`{${paramsLine}}`);
-      const nodeType = params["type"].toString();
-
-      // Instantiate node
-      const registered = getRegisteredNode(nodeType);
-      const node = new registered.constructor(params);
-      return {
-        name,
-        node,
-        startIndex: 0,
-        endIndex: closeIdx,
-      };
-    } catch (err) {
-      throw new ParseError("Could not parse node: " + declaration, err);
-    }
-  }
-
-  /**
-   * Parse the parameters to a node
-   */
-  private static parseParams(paramsStr: string): Record<string, ScalarType> {
-    // Surround unescaped keys with quotation marks
-    const regex = new RegExp(/([a-zA-Z][a-zA-Z0-9_]*:)/g);
-    const escaped = paramsStr.replace(
-      regex,
-      (property: string) => `"${property.slice(0, property.length - 1)}":`
-    );
-
-    const params = JSON.parse(escaped) as Record<string, ScalarType>;
-    if (params["type"] == null) {
-      throw new ParseError(
-        "Missing required 'type' in params: " + JSON.stringify(params)
-      );
-    }
-    return params;
   }
 
   /**
