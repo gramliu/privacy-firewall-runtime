@@ -1,25 +1,29 @@
-# Map-Aggregate Runtime
+# Privacy Firewall Runtime
 
-A different flow-based runtime.
+A linear manifest runtime for defining transformations on OAuth data.
 
-## Format
+## Example Manifest
 
 ```
-TITLE: Example Flow
-PIPELINE: MatchStreet -> Count
+TITLE: Zoom
+DESCRIPTION: Get all upcoming Zoom meetings
+PIPELINE: CalendarEvents -> FilterZoom -> Select
 
-MatchStreet(
+CalendarEvents(
+  type: "Input",
+  resource_type: "calendar_event"
+)
+FilterZoom(
   type: "Filter",
-  operation: "===",
-  target: "streetName",
-  targetValue: "Forbes Avenue"
+  operation: "match",
+  fields: ["location"],
+  pattern: /\bhttps?:\/\/(?:www\.)?(?:zoom\.(?:us|com|gov)|\w+\.zoom\.(?:us|com|gov))\/[^\s]+\b/
 )
-Count(
-  type: "Aggregate",
-  operation: "count"
+Select(
+  type: "Select",
+  operation: "select",
+  fields: ["name", "location", "startTime"]
 )
-
-INPUT: MatchStreet.targetValue
 ```
 
 ## Parameters
@@ -34,6 +38,7 @@ MatchStreet(
   targetValue: "Forbes Avenue"
 )
 ```
+
 `type` is a required parameter for every node declaration. This declares the type of the node.
 
 The remaining parameters are specific to each node.
