@@ -3,9 +3,6 @@ import type Node from "./Node";
 import type { NodeProps } from "./Node";
 import Payload, { ScalarType } from "./Payload";
 
-export type NodeParameterOverride = Record<string, ScalarType>;
-export type GraphParameterOverride = Record<string, NodeParameterOverride>;
-
 export interface BenchmarkResult {
   result: Payload[];
   performance: NodePerformance[];
@@ -26,14 +23,13 @@ export interface NodePerformance {
 export default class Graph {
   private readonly pipeline: string[];
   private readonly nodeRegistry: Record<string, Node<NodeProps>>;
-  private readonly runtimeParameters: Record<string, Set<string>>;
-  private readonly requiredHardware: string[];
 
-  constructor(public readonly title: string) {
+  constructor(
+    public readonly title: string,
+    public readonly description: string
+  ) {
     this.pipeline = [];
     this.nodeRegistry = {};
-    this.runtimeParameters = {};
-    this.requiredHardware = [];
   }
 
   /**
@@ -45,32 +41,23 @@ export default class Graph {
    * Each corresponding value should be a mapping of properties on that node
    * to the overriding values
    */
-  public async execute(
-    data: Payload[] = [],
-    overrides: GraphParameterOverride = {}
-  ): Promise<Payload[]> {
-    const { result } = await this.benchmark(data, overrides);
+  public async execute(data: Payload[] = []): Promise<Payload[]> {
+    const { result } = await this.benchmark(data);
     return result;
   }
 
   /**
    * Execute the graph but also measure time elapsed for each node
    */
-  public async benchmark(
-    data: Payload[] = [],
-    overrides: GraphParameterOverride = {}
-  ): Promise<BenchmarkResult> {
-    this.assertValidOverride(overrides);
-
+  public async benchmark(data: Payload[] = []): Promise<BenchmarkResult> {
     const performance = [] as NodePerformance[];
     let payloads: Payload[] = data;
     for (const nodeName of this.pipeline) {
       const node = this.nodeRegistry[nodeName];
-      const paramOverrides = overrides[nodeName] ?? {};
       const payloadsProcessed = payloads.length;
       const start = Date.now();
 
-      payloads = await node.process(payloads, paramOverrides);
+      payloads = await node.process(payloads);
 
       const end = Date.now();
       performance.push({
@@ -84,31 +71,6 @@ export default class Graph {
       result: payloads,
       performance,
     };
-  }
-
-  /**
-   * Assert that all specified overrides are for nodes on this graph
-   * Assert that all node parameter overrides are for registered graph inputs
-   */
-  private assertValidOverride(overrides: GraphParameterOverride) {
-    // Assert that all overrides are for nodes on this graph
-    for (const overrideNode of Object.keys(overrides)) {
-      if (!this.hasNode(overrideNode)) {
-        throw new Error("Invalid override! No such node: " + overrideNode);
-      }
-    }
-
-    // Assert that all parameter overrides are registered
-    for (const overrideNode of Object.keys(overrides)) {
-      const nodeOverride = overrides[overrideNode];
-      for (const overrideProperty of Object.keys(nodeOverride)) {
-        if (!this.hasParameter(overrideNode, overrideProperty)) {
-          throw new Error(
-            `Invalid override! Node "${overrideNode}" has no overridable parameter "${overrideProperty}`
-          );
-        }
-      }
-    }
   }
 
   /**
@@ -140,58 +102,7 @@ export default class Graph {
    * Returns a copy of the nodes associated with this graph
    */
   public getNodes(): Record<string, Node<NodeProps>> {
-    // TODO: Adopt more robust defensive copying
     return { ...this.nodeRegistry };
-  }
-
-  /**
-   * Register a hardware device required by this graph
-   */
-  public addHardware(hardware: string) {
-    this.requiredHardware.push(hardware);
-  }
-
-  /**
-   * Returns the hardware used by this graph
-   */
-  public getHardware(): string[] {
-    return this.requiredHardware.slice();
-  }
-
-  /**
-   * Register a runtime parameter to the specified node
-   * @throws if no node with the specified name is on the graph
-   * @throws if the specified node exists but does not contain the specified property
-   */
-  public addParameter(nodeName: string, property: string) {
-    if (!this.hasNode(nodeName)) {
-      throw new Error(`No such node found on this graph: "${nodeName}"`);
-    }
-    const node = this.nodeRegistry[nodeName];
-    if (!node.hasProperty(property)) {
-      const nodeType = node.getType();
-      throw new Error(
-        `Node '${nodeName}' of type '${nodeType}' does not have property '${property}'`
-      );
-    }
-    if (!this.runtimeParameters[nodeName]) {
-      this.runtimeParameters[nodeName] = new Set();
-    }
-    this.runtimeParameters[nodeName].add(property);
-  }
-
-  /**
-   * Returns true if the specified nodeName has a runtime parameter to the specified property
-   * @throws if the specified node does not exist on this graph
-   */
-  public hasParameter(nodeName: string, property: string): boolean {
-    if (!this.hasNode(nodeName)) {
-      throw new Error("No such node found on this graph: " + nodeName);
-    }
-    if (!this.runtimeParameters[nodeName]) {
-      return false;
-    }
-    return this.runtimeParameters[nodeName].has(property);
   }
 
   /**
@@ -209,6 +120,6 @@ export default class Graph {
    */
   public toString(): String {
     const pipelineStr = this.pipeline.join(" -> ");
-    return `Graph{title: "${this.title}", hardware: "${this.requiredHardware}", pipeline: "${pipelineStr}", nodes: "${this.nodeRegistry}"}`;
+    return `Graph{title: "${this.title}", description: "${this.description}", pipeline: "${pipelineStr}", nodes: "${this.nodeRegistry}"}`;
   }
 }

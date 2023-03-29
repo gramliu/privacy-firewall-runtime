@@ -25,42 +25,33 @@ export default class GraphLoader {
   public static parse(graphString: string): Graph {
     this.loadNodes();
     try {
-      const tags = ["TITLE", "PIPELINE", "PARAMETER", "HARDWARE"];
+      const tags = ["TITLE", "DESCRIPTION", "PIPELINE"];
       const lines = graphString.split("\n");
 
+      // Get manifest metadata
       const title = this.getFirstWithTag(lines, "TITLE");
-      const hardware = this.getFirstWithTag(lines, "HARDWARE").toString();
+      const description = this.getFirstWithTag(lines, "HARDWARE");
       const pipeline = this.getFirstWithTag(lines, "PIPELINE")
         .split("->")
         .map((node) => node.trim());
-      const parameterLines = this.getAllWithTag(lines, "PARAMETER");
-      const parameters = this.parseParameters(parameterLines);
 
       // Parse and instantiate the nodes
       const nodes = this.parseNodes(lines, tags);
 
       // Construct the graph
-      const graph = new Graph(title);
-      graph.addHardware(hardware);
+      const graph = new Graph(title, description);
 
       // Add nodes
-      const mapNodeRegex = /\[[a-zA-Z0-9_]+\]/;
+      const nodeRegex = /\[[a-zA-Z0-9_]+\]/;
       for (const nodeName of pipeline) {
-        if (mapNodeRegex.test(nodeName)) {
-          // TODO: Support map nodes on graphs
-          // Map node. Ignore for now
+        if (nodeRegex.test(nodeName)) {
           continue;
         }
         const node = nodes[nodeName];
         if (node == null) {
-          throw new ParseError(`Unregistered node in pipeline: ${nodeName}`)
+          throw new ParseError(`Unregistered node in pipeline: ${nodeName}`);
         }
         graph.addNode(nodeName, node);
-      }
-
-      // Add runtime parameters to nodes
-      for (const [node, property] of parameters) {
-        graph.addParameter(node, property);
       }
 
       return graph;
@@ -76,22 +67,6 @@ export default class GraphLoader {
     for (const node of nodes) {
       require("../" + node);
     }
-  }
-
-  /**
-   * Parse runtime parameters for the graph
-   */
-  private static parseParameters(parameterLines: string[]): [string, string][] {
-    const inputs = [] as [string, string][];
-    for (const line of parameterLines) {
-      const tokens = line.split(".");
-      if (tokens.length < 2) {
-        throw new ParseError(`Malformed graph parameter: ${line}`);
-      }
-      const [node, property] = tokens;
-      inputs.push([node, property]);
-    }
-    return inputs;
   }
 
   /**
