@@ -1,20 +1,18 @@
-import GraphLoader from "../core/GraphLoader";
 import * as fs from "fs";
-import { Resource } from "../core";
+import GraphLoader from "../core/GraphLoader";
+import Resource from "../core/Resource";
 
 test("Graph execution works normally", async () => {
   const manifest = fs.readFileSync("input/basic.mf").toString();
+  const rawData = fs.readFileSync("./input/basic.json", "utf-8");
+  const json = JSON.parse(rawData);
+
+  const resource = {
+    resourceType: "calendar_event",
+    metadata: { ...json, items: undefined },
+    data: json.items,
+  } as Resource;
+
   const graph = GraphLoader.parse(manifest);
-  const dummyData: Resource = {
-    contentType: "calendar_event",
-    data: [],
-  };
-  const dummyData: ResourceData[] = [];
-  for (let i = 0; i < 10; i++) {
-    dummyData.push({
-      contentType: "calendar_event",
-      data: [],
-    });
-  }
-  await graph.execute(dummyData);
+  await graph.execute(resource);
 });

@@ -24,7 +24,8 @@
     "core",
     "nodes",
     "util",
-    "index.d.ts"
+    "index.d.ts",
+    "./index.ts"
   ],
   "ts-node": {
     "transpileOnly": true,
