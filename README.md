@@ -11,7 +11,7 @@ PIPELINE: CalendarEvents -> FilterZoom -> Select
 
 CalendarEvents(
   type: "Input",
-  resource_type: "calendar_event"
+  resourceType: "calendar_event"
 )
 FilterZoom(
   type: "Filter",
