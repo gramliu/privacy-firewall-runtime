@@ -26,6 +26,18 @@ Select(
 )
 ```
 
+## Available Nodes
+
+The list of available nodes are as follows:
+
+- `Input`
+- `Filter`
+- `Limit`
+- `Aggregate`
+- `Sort`
+- `Spoof`
+- `Select`
+
 ## Parameters
 
 Nodes are declared as follows:
