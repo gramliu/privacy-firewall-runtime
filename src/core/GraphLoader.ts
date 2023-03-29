@@ -30,7 +30,7 @@ export default class GraphLoader {
 
       // Get manifest metadata
       const title = this.getFirstWithTag(lines, "TITLE");
-      const description = this.getFirstWithTag(lines, "HARDWARE");
+      const description = this.getFirstWithTag(lines, "DESCRIPTION");
       const pipeline = this.getFirstWithTag(lines, "PIPELINE")
         .split("->")
         .map((node) => node.trim());
