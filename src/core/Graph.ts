@@ -1,3 +1,4 @@
+import Input from "nodes/Input";
 import GraphLoader from "./GraphLoader";
 import type Node from "./Node";
 import type { NodeProps } from "./Node";
@@ -121,5 +122,19 @@ export default class Graph {
   public toString(): String {
     const pipelineStr = this.pipeline.join(" -> ");
     return `Graph{title: "${this.title}", description: "${this.description}", pipeline: "${pipelineStr}", nodes: "${this.nodeRegistry}"}`;
+  }
+
+  /**
+   * Return the resource type of the graph or undefined if no Input node is
+   * present.
+   */
+  public resourceType(): string | undefined {
+    const input = this.pipeline
+      .map((nodeName) => this.nodeRegistry[nodeName])
+      .find((node) => node.getType() === "Input");
+
+    if (input) {
+      return (input as Input).getParams().resourceType;
+    }
   }
 }

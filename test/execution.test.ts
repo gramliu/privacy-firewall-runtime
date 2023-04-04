@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import GraphLoader from "../core/GraphLoader";
-import Resource from "../core/Resource";
+import GraphLoader from "../src/core/GraphLoader";
+import Resource from "../src/core/Resource";
 
 test("Graph execution works normally", async () => {
   const manifest = fs.readFileSync("input/basic.mf").toString();

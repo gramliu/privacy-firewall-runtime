@@ -3,12 +3,12 @@ import Resource from "../core/Resource";
 import Schema from "../core/Schema";
 import { MapAggregateNode } from "../core";
 
-export type InputProps = {
+export type SelectProps = {
   fields: string[];
 };
 
 @MapAggregateNode("Select", "Select fields to retrieve")
-export default class Select extends Node<InputProps> {
+export default class Select extends Node<SelectProps> {
   async process(resource: Resource): Promise<Resource> {
     const { fields } = this.getLocalParams();
     const { data } = resource;
@@ -24,7 +24,7 @@ export default class Select extends Node<InputProps> {
     return resource;
   }
 
-  getSchema(): Schema<Required<InputProps>> {
+  getSchema(): Schema<Required<SelectProps>> {
     return {
       fields: {
         description: "Fields to retrieve",

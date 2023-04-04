@@ -6,8 +6,8 @@
     "target": "es6",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": ".",
+    "sourceMap": false,
+    "outDir": "./dist",
     "rootDir": "./src",
     "baseUrl": "./src",
     "allowJs": true,
@@ -25,7 +25,8 @@
     "nodes",
     "util",
     "index.d.ts",
-    "./index.ts"
+    "./index.ts",
+    "*.md"
   ],
   "ts-node": {
     "transpileOnly": true,

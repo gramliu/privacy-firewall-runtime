@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "npm run build",
-    "clean": "rm -rf core nodes util index.d.ts index.js index.js.map",
-    "build": "tsc --project ./",
+    "clean": "rm -rf dist/",
+    "build": "npm run clean && tsc --project ./",
     "test": "jest test",
     "dev": "ts-node index.ts"
   },

@@ -60,6 +60,8 @@ export default class GraphLoader {
 
       return graph;
     } catch (err) {
+      console.log(1);
+      console.error(err);
       throw new ParseError("Unable to parse graph!", err);
     }
   }
