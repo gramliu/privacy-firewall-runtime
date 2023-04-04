@@ -1,7 +1,7 @@
 {
-  "name": "@map-aggregate/runtime",
+  "name": "@privacy-firewall/runtime",
   "version": "0.0.40",
-  "description": "A linear flow runtime for the Map-Aggregate project.",
+  "description": "A linear flow runtime for the Privacy Firewall project.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -48,10 +48,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gramliu/map-aggregate-runtime.git"
+    "url": "git+https://github.com/gramliu/privacy-firewall-runtime.git"
   },
   "bugs": {
-    "url": "https://github.com/gramliu/map-aggregate-runtime/issues"
+    "url": "https://github.com/gramliu/privacy-firewall-runtime/issues"
   },
-  "homepage": "https://github.com/gramliu/map-aggregate-runtime#readme"
+  "homepage": "https://github.com/gramliu/privacy-firewall-runtime#readme"
 }
