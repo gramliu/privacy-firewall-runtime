@@ -17,7 +17,7 @@ FilterZoom(
   type: "Filter",
   operation: "match",
   fields: ["location"],
-  pattern: /\bhttps?:\/\/(?:www\.)?(?:zoom\.(?:us|com|gov)|\w+\.zoom\.(?:us|com|gov))\/[^\s]+\b/
+  targetValue: /\bhttps?:\/\/(?:www\.)?(?:zoom\.(?:us|com|gov)|\w+\.zoom\.(?:us|com|gov))\/[^\s]+\b/
 )
 Select(
   type: "Select",
