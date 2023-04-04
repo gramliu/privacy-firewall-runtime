@@ -7,6 +7,7 @@ export { default as Fuzz } from "./Fuzz";
 export { default as Input } from "./Input";
 export { default as Select } from "./Select";
 export { default as Sort } from "./Sort";
+export { default as Spoof } from "./Spoof";
 
 // Named exports
 export * from "./Limit";
@@ -15,3 +16,4 @@ export * from "./Fuzz";
 export * from "./Input";
 export * from "./Select";
 export * from "./Sort";
+export * from "./Spoof";
