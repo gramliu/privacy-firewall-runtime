@@ -3,12 +3,12 @@ import Resource from "../core/Resource";
 import Schema from "../core/Schema";
 import { MapAggregateNode } from "../core";
 
-export type ChooseProps = {
+export type LimitProps = {
   count: number;
 };
 
 @MapAggregateNode("Limit", "Limit the number of child data payloads.")
-export default class Choose extends Node<ChooseProps> {
+export default class Limit extends Node<LimitProps> {
   async process(resource: Resource): Promise<Resource> {
     const { count } = this.getLocalParams();
     if (resource.data.length < count) {
@@ -18,7 +18,7 @@ export default class Choose extends Node<ChooseProps> {
     }
   }
 
-  getSchema(): Schema<Required<ChooseProps>> {
+  getSchema(): Schema<Required<LimitProps>> {
     return {
       count: {
         description:
