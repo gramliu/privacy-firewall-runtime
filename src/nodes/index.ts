@@ -8,6 +8,7 @@ export { default as Input } from "./Input";
 export { default as Select } from "./Select";
 export { default as Sort } from "./Sort";
 export { default as Spoof } from "./Spoof";
+export { default as Aggregate } from "./Aggregate";
 
 // Named exports
 export * from "./Limit";
@@ -17,3 +18,4 @@ export * from "./Input";
 export * from "./Select";
 export * from "./Sort";
 export * from "./Spoof";
+export * from "./Aggregate";

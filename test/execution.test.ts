@@ -14,5 +14,6 @@ test("Graph execution works normally", async () => {
   } as Resource;
 
   const graph = GraphLoader.parse(manifest);
-  await graph.execute(resource);
+  const result = await graph.execute(resource);
+  console.log(result);
 });

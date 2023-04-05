@@ -1,6 +1,6 @@
 TITLE: Zoom
 DESCRIPTION: Get all upcoming Zoom meetings
-PIPELINE: CalendarEvents -> FilterZoom -> Select
+PIPELINE: CalendarEvents -> FilterZoom -> CountEvents
 
 CalendarEvents(
   type: "Input",
@@ -13,8 +13,8 @@ FilterZoom(
   fields: ["location"],
   targetValue: /\bhttps?:\/\/(?:www\.)?(?:zoom\.(?:us|com|gov)|\w+\.zoom\.(?:us|com|gov))\/[^\s]+\b/
 )
-Select(
-  type: "Select",
-  operation: "select",
-  fields: ["summary", "location", "start"]
+CountEvents(
+  type: "Aggregate",
+  operation: "count",
+  target: "summary"
 )

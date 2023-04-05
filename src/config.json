@@ -4,6 +4,7 @@
     "nodes/Fuzz",
     "nodes/Input",
     "nodes/Limit",
-    "nodes/Select"
+    "nodes/Select",
+    "nodes/Aggregate"
   ]
 }
