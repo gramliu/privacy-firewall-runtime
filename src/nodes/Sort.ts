@@ -1,4 +1,7 @@
-import { MapAggregateNode, Resource, Schema, Node } from "core";
+import Node from "../core/Node";
+import Resource from "../core/Resource";
+import Schema from "../core/Schema";
+import { MapAggregateNode } from "../core";
 
 export type SortProps = {
   sortKey: string;
