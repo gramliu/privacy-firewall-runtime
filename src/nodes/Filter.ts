@@ -15,11 +15,20 @@ export type FilterOperation =
   | "not includes"
   | "match";
 
+// Mapping of predetermined filter patterns
+const filterPatterns = {
+  "Zoom URL":
+    /\bhttps?:\/\/(?:www\.)?(?:zoom\.(?:us|com|gov)|\w+\.zoom\.(?:us|com|gov))\/[^\s]+\b/,
+} as const;
+
+export type FilterPattern = "Zoom URL";
+
 export type FilterProps = {
   operation: FilterOperation;
   fields: string[];
   requirement: "any" | "all";
   targetValue: ScalarType;
+  pattern: FilterPattern;
 };
 
 @MapAggregateNode("Filter", "Filter payloads based on a predicate")
@@ -30,19 +39,25 @@ export default class Filter extends Node<FilterProps> {
       requirement,
       fields: fieldNames,
       targetValue,
+      pattern,
     } = this.getLocalParams();
     const withProperties = filterWithAnyProperty(resource.data, fieldNames);
     const predicate = getPredicate(operation);
+
+    let predicateTarget = targetValue;
+    if (pattern) {
+      predicateTarget = filterPatterns[pattern];
+    }
 
     // Filter ResourceData
     const filteredData = withProperties.filter((payload) => {
       const fields = fieldNames.map((fieldName) => payload[fieldName]);
       if (requirement === "all") {
         // Ensure all fields match
-        return fields.every((field) => predicate(field, targetValue));
+        return fields.every((field) => predicate(field, predicateTarget));
       } else {
         // Ensure at least one field matches
-        return fields.some((field) => predicate(field, targetValue));
+        return fields.some((field) => predicate(field, predicateTarget));
       }
     });
 
@@ -69,6 +84,9 @@ export default class Filter extends Node<FilterProps> {
       },
       targetValue: {
         description: "The value or pattern to compare against",
+      },
+      pattern: {
+        description: "A predefined pattern to match against",
       },
     };
   }
