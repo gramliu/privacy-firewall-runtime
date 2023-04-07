@@ -11,7 +11,7 @@ FilterZoom(
   operation: "match",
   requirement: "any",
   fields: ["location"],
-  targetValue: /\bhttps?:\/\/(?:www\.)?(?:zoom\.(?:us|com|gov)|\w+\.zoom\.(?:us|com|gov))\/[^\s]+\b/
+  pattern: "Zoom URL"
 )
 CountEvents(
   type: "Aggregate",
