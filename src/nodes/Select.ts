@@ -16,8 +16,11 @@ export default class Select extends Node<SelectProps> {
 
     for (const payload of data) {
       const replica: Record<string, any> = {};
-      for (const field in fields) {
-        replica[field] = payload[field];
+      const payloadFields = Object.keys(payload);
+      for (const field of fields) {
+        if (payloadFields.includes(field)) {
+          replica[field] = payload[field];
+        }
       }
       outputData.push(replica);
     }
