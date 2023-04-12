@@ -47,6 +47,9 @@ export default class Filter extends Node<FilterProps> {
     let predicateTarget = targetValue;
     if (pattern) {
       predicateTarget = filterPatterns[pattern];
+      if (!predicateTarget) {
+        throw new Error("Unknown pattern: " + pattern);
+      }
     }
 
     // Filter ResourceData
