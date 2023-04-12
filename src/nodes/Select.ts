@@ -12,15 +12,16 @@ export default class Select extends Node<SelectProps> {
   async process(resource: Resource): Promise<Resource> {
     const { fields } = this.getLocalParams();
     const { data } = resource;
+    const outputData = [];
 
     for (const payload of data) {
-      // TODO: Need to handle nested fields
-      for (const key in payload) {
-        if (!fields.includes(key)) {
-          delete payload[key];
-        }
+      const replica: Record<string, any> = {};
+      for (const field in fields) {
+        replica[field] = payload[field];
       }
+      outputData.push(replica);
     }
+    resource.data = outputData;
     return resource;
   }
 
