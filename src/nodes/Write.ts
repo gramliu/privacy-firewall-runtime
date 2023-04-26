@@ -7,12 +7,14 @@ export type WriteAction = "create" | "update" | "delete";
 
 export type WriteProps = {
   resourceType: "file";
-  actions: WriteAction[];
+  action: WriteAction;
 };
 
 @MapAggregateNode("Write", "Write to some data source")
 export default class Write extends Node<WriteProps> {
   async process(resource: Resource): Promise<Resource> {
+    const { action } = this.getLocalParams();
+    resource.metadata.writeAction = action;
     return resource;
   }
 
@@ -20,6 +22,9 @@ export default class Write extends Node<WriteProps> {
     return {
       resourceType: {
         description: "The type of resource to write to.",
+      },
+      action: {
+        description: "The action to perform on the resource.",
       },
     };
   }

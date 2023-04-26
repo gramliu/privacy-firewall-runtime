@@ -13,8 +13,7 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "typeRoots": ["./node_modules/@types", "./src"],
-    "experimentalDecorators": true,
-    "strict": true
+    "experimentalDecorators": true
   },
   "include": ["**/*.ts"],
   "exclude": [
