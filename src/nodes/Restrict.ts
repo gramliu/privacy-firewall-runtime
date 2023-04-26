@@ -55,16 +55,29 @@ export default class Restrict extends Node<RestrictProps> {
       if (!allowedMimeTypes.includes(metadata.mimeType)) {
         throw new Error("File type not allowed: " + metadata.mimeType);
       }
+
+      if (metadata.parent !== folderId) {
+        throw new Error(
+          `File must be created in folder ${folderId}, not ${metadata.parent}`
+        );
+      }
     } else {
       // Get file metadata before mutating
       const service = google.drive({ version: "v3", auth: authClient });
       const file = await service.files.get({
         fileId: metadata.fileId,
-        fields: "mimeType",
+        fields: "mimeType, parents",
       });
       const mimeType = z.string().parse(file.data["mimeType"]);
       if (!allowedMimeTypes.includes(mimeType)) {
         throw new Error("File type not allowed: " + mimeType);
+      }
+
+      const parents = z.array(z.string()).parse(file.data["parents"]);
+      if (!parents.includes(folderId)) {
+        throw new Error(
+          `File must be in folder ${folderId}, not ${parents.join(", ")}`
+        );
       }
     }
 
