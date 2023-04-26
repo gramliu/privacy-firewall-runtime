@@ -5,6 +5,8 @@
     "nodes/Input",
     "nodes/Limit",
     "nodes/Select",
-    "nodes/Aggregate"
+    "nodes/Aggregate",
+    "nodes/Write",
+    "nodes/Restrict"
   ]
 }

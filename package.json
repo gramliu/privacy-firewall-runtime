@@ -40,8 +40,11 @@
     "axios": "^0.27.2",
     "convert": "^4.9.0",
     "geolib": "^3.3.3",
+    "google-auth-library": "^8.7.0",
+    "googleapis": "^118.0.0",
     "luxon": "^3.0.4",
-    "module-alias": "^2.2.2"
+    "module-alias": "^2.2.2",
+    "zod": "^3.21.4"
   },
   "directories": {
     "test": "test"
