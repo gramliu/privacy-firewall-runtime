@@ -1,0 +1,14 @@
+TITLE: Notability
+DESCRIPTION: Backup notes to Google Drive
+PIPELINE: RequestWrite -> RestrictWrites
+
+RequestWrite(
+  type: "Write",
+  resourceType: "file",
+  action: "create"
+)
+RestrictWrites(
+  type: "Restrict",
+  folder: "/Notability",
+  fileTypes: ["document", "image"]
+)
